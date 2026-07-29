@@ -12,14 +12,14 @@ window.APP_CONFIG = {
     tagline: "Island Flavor on Wheels — Grants Pass & the Rogue Valley",
     phone: "",
     email: "",
-    logo: "axiommaster3.webp"
+    logo: ""
   },
 
   branding: {
-    primary: "#1CA6C4",
-    accent: "#7DC242",
-    theme: "ocean",
-    neon: { on: true, color: "match", width: 3 }
+    primary: "#7B2FF7",
+    accent: "#FFD400",
+    theme: "galaxy",
+    neon: { on: true, color: "#FFD400", width: 3 }
   },
 
   modules: {
