@@ -6,6 +6,11 @@ window.APP_CONFIG = {
     contactName: "",
     contactEmail: ""
   },
+  admin: {
+    title: "Mayjah Flayvah",
+    subtitle: "Owner Dashboard",
+    password: "mayjah2026"
+  },
 
   business: {
     name: "Mayjah Flayvah",
