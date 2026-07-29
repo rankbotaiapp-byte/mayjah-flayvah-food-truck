@@ -24,7 +24,7 @@ window.APP_CONFIG = {
     primary: "#7B2FF7",
     accent: "#FFD400",
     theme: "galaxy",
-    neon: { on: true, color: "#FFD400", width: 3 }
+    neon: { on: true, color: "#4B0082", width: 3 }
   },
 
   modules: {
