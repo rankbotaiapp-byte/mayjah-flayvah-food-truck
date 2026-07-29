@@ -10,10 +10,10 @@
     * { margin:0; padding:0; box-sizing:border-box; font-family: system-ui, sans-serif; }
     body { background: var(--bg); color: #fff; padding: 1rem; min-height: 100vh; }
     header { text-align: center; padding: 1.5rem 0; }
-    header h1 { font-size: 1.5rem; color: var(--accent); }
+    header h1 { font-size: 1.5rem; color: var(--accent); text-shadow: 0 0 12px var(--accent); }
     header p { opacity: .6; font-size: .85rem; margin-top: .3rem; }
-    .refresh { display: block; margin: 0 auto 1.5rem; background: var(--accent); color: #000; border: none; padding: .7rem 1.5rem; border-radius: 8px; font-weight: bold; cursor: pointer; }
-    .booking { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 1rem 1.2rem; margin-bottom: .8rem; max-width: 600px; margin-left: auto; margin-right: auto; }
+    .refresh { display: block; margin: 0 auto 1.5rem; background: var(--accent); color: #000; border: none; padding: .7rem 1.5rem; border-radius: 8px; font-weight: bold; cursor: pointer; box-shadow: 0 0 16px -4px var(--accent); }
+    .booking { background: var(--panel); border: 1px solid var(--accent); border-radius: 12px; padding: 1rem 1.2rem; margin-bottom: .8rem; max-width: 600px; margin-left: auto; margin-right: auto; box-shadow: 0 0 14px -8px var(--accent); }
     .booking .name { font-size: 1.1rem; font-weight: 700; color: var(--accent); }
     .booking .row { display: flex; justify-content: space-between; margin-top: .5rem; font-size: .9rem; gap: .5rem; }
     .booking .label { opacity: .5; flex-shrink: 0; }
@@ -30,6 +30,14 @@
     #gate button { background: var(--accent); color: #000; border: none; padding: .8rem 1.6rem; border-radius: 8px; font-weight: bold; cursor: pointer; }
     #gate .err { color: #ff6b6b; font-size: .85rem; height: 1rem; }
     #app { display: none; }
+
+    /* Neon color switcher */
+    .theme-bar { display: flex; justify-content: center; gap: .5rem; flex-wrap: wrap; margin-bottom: 1.2rem; }
+    .swatch { width: 32px; height: 32px; border-radius: 50%; cursor: pointer; border: 2px solid rgba(255,255,255,.3); box-shadow: 0 0 10px -2px currentColor; transition: transform .15s; }
+    .swatch:hover, .swatch:active { transform: scale(1.15); }
+    .swatch.active { border-color: #fff; }
+    .swatch.custom { display: flex; align-items: center; justify-content: center; background: var(--panel); font-size: .9rem; color: #fff; }
+    #customColorInput { position: absolute; opacity: 0; width: 0; height: 0; }
   </style>
 </head>
 <body>
@@ -45,6 +53,9 @@
       <h1>📅 Bookings Dashboard</h1>
       <p>New Era Apps · AXIOM</p>
     </header>
+
+    <div class="theme-bar" id="themeBar"></div>
+
     <button class="refresh" onclick="loadBookings()">↻ Refresh</button>
     <div class="count" id="count"></div>
     <div id="list"><div class="empty">Loading bookings…</div></div>
@@ -57,8 +68,49 @@
       document.querySelector("header h1").textContent = "📅 " + (cfg.admin.title || "Bookings");
       document.querySelector("header p").textContent = cfg.admin.subtitle || "";
     }
-    if (cfg.branding?.accent) {
-      document.documentElement.style.setProperty("--accent", cfg.branding.accent);
+
+    // ---- Neon color switcher ----
+    const THEME_COLORS = [
+      "#F4A300", "#FF4FD8", "#4D7BFF", "#4DFFE0",
+      "#B6FF4D", "#FF6B4D", "#7B2FF7", "#FFFFFF"
+    ];
+    const STORAGE_KEY = "admin_accent_" + (cfg.meta?.leadId || "default");
+
+    function applyAccent(color) {
+      document.documentElement.style.setProperty("--accent", color);
+      localStorage.setItem(STORAGE_KEY, color);
+      document.querySelectorAll(".swatch").forEach(s => {
+        s.classList.toggle("active", s.dataset.color === color);
+      });
+    }
+
+    function buildThemeBar() {
+      const bar = document.getElementById("themeBar");
+      const saved = localStorage.getItem(STORAGE_KEY) ||
+        cfg.branding?.accent || cfg.admin?.defaultAccent || "#F4A300";
+
+      THEME_COLORS.forEach(c => {
+        const sw = document.createElement("div");
+        sw.className = "swatch";
+        sw.style.background = c;
+        sw.style.color = c;
+        sw.dataset.color = c;
+        sw.onclick = () => applyAccent(c);
+        bar.appendChild(sw);
+      });
+
+      const custom = document.createElement("label");
+      custom.className = "swatch custom";
+      custom.textContent = "+";
+      custom.style.color = "#fff";
+      const input = document.createElement("input");
+      input.type = "color";
+      input.id = "customColorInput";
+      input.oninput = (e) => applyAccent(e.target.value);
+      custom.appendChild(input);
+      bar.appendChild(custom);
+
+      applyAccent(saved);
     }
 
     // ---- Simple password gate ----
@@ -68,6 +120,7 @@
       if (entered === correct) {
         document.getElementById("gate").style.display = "none";
         document.getElementById("app").style.display = "block";
+        buildThemeBar();
         loadBookings();
       } else {
         document.getElementById("gateErr").textContent = "Incorrect password.";
