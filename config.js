@@ -40,7 +40,7 @@ window.APP_CONFIG = {
 
   content: {
     hero: {
-      banner: "",
+      banner: "flayvah-banner.jpg.png",
       headline: "Island Flavor on Wheels",
       subtext: "Hawaiian-style plates from the Mayjah Flayvah food truck — teriyaki chicken, wasabi salmon, loco moco, and more. Catch us around the Rogue Valley.",
       buttons: [
